@@ -1,0 +1,134 @@
+<!-- paymentStatus.html -->
+<template>
+    <lightning-card title="납부 상태" icon-name="standard:payment_gateway">
+        <div class="slds-var-p-around_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <!-- 납부 정보 표시 -->
+            <template if:true={paymentStatus}>
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <dl class="slds-list_horizontal">
+                            <dt class="slds-item_label slds-text-color_weak">회차</dt>
+                            <dd class="slds-item_detail">{paymentStatus.installmentNumber}회차</dd>
+                            
+                            <dt class="slds-item_label slds-text-color_weak">납부금액</dt>
+                            <dd class="slds-item_detail">{formattedAmount}</dd>
+                            
+                            <dt class="slds-item_label slds-text-color_weak">납부예정일</dt>
+                            <dd class="slds-item_detail">{formattedDueDate}</dd>
+                        </dl>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <dl class="slds-list_horizontal">
+                            <dt class="slds-item_label slds-text-color_weak">상태</dt>
+                            <dd class="slds-item_detail">
+                                <span class={statusClass}>{paymentStatus.status}</span>
+                            </dd>
+                            
+                            <template if:true={isPaymentCompleted}>
+                                <dt class="slds-item_label slds-text-color_weak">납부일시</dt>
+                                <dd class="slds-item_detail">{paymentStatus.paymentDate}</dd>
+                                
+                                <dt class="slds-item_label slds-text-color_weak">납부은행</dt>
+                                <dd class="slds-item_detail">{paymentStatus.paymentBank}</dd>
+                            </template>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼들 -->
+                <div class="slds-var-m-top_medium">
+                    <template if:true={canMakePayment}>
+                        <lightning-button-group>
+                            <lightning-button 
+                                label="조회납부" 
+                                variant="brand"
+                                onclick={handleInquiryPayment}
+                                disabled={isLoading}>
+                            </lightning-button>
+                            
+                            <lightning-button 
+                                label="입력납부" 
+                                variant="neutral"
+                                onclick={handleInputPayment}
+                                disabled={isLoading}>
+                            </lightning-button>
+                            
+                            <lightning-button 
+                                label="링크납부 생성" 
+                                variant="neutral"
+                                onclick={handleCreateLinkPayment}
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </lightning-button-group>
+                    </template>
+
+                    <lightning-button 
+                        label="납부상태 확인" 
+                        variant="neutral"
+                        onclick={handleCheckPaymentStatus}
+                        disabled={isLoading}
+                        class="slds-var-m-left_x-small">
+                    </lightning-button>
+                </div>
+
+                <!-- 링크납부 URL 표시 -->
+                <template if:true={paymentStatus.linkPaymentUrl}>
+                    <div class="slds-box slds-var-m-top_medium">
+                        <p class="slds-text-heading_small">링크납부 URL</p>
+                        <div class="slds-grid slds-grid_align-spread slds-var-m-top_small">
+                            <div class="slds-col slds-size_10-of-12">
+                                <p class="slds-text-body_small slds-truncate">
+                                    {paymentStatus.linkPaymentUrl}
+                                </p>
+                            </div>
+                            <div class="slds-col slds-size_2-of-12 slds-text-align_right">
+                                <lightning-button-icon 
+                                    icon-name="utility:copy"
+                                    alternative-text="복사"
+                                    title="링크 복사"
+                                    onclick={handleCopyLink}>
+                                </lightning-button-icon>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+
+        <!-- 납부 모달 -->
+        <template if:true={showPaymentModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" 
+                     class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close"
+                                          alternative-text="close"
+                                          variant="inverse"
+                                          size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title">납부 진행중</h2>
+                    </header>
+                    <div class="slds-modal__content slds-var-p-around_medium">
+                        <p>새 창에서 납부가 진행중입니다.</p>
+                        <p>납부 완료 후 이 창을 닫아주세요.</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_brand" onclick={closeModal}>
+                            완료
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>
