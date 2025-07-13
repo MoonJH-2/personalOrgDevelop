@@ -1,0 +1,51 @@
+<template>
+    <lightning-card title="미납 금액 상태" icon-name="standard:payment_adjustment">
+        <div class="slds-m-around_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+            
+            <!-- 액션 버튼 -->
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col">
+                    <lightning-button 
+                        label="새로고침" 
+                        icon-name="utility:refresh" 
+                        onclick={handleRefresh}
+                        variant="neutral">
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- 데이터 테이블 -->
+            <template if:true={hasData}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={data}
+                    columns={columns}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+            
+            <!-- 데이터 없음 메시지 -->
+            <template if:false={hasData}>
+                <div class="slds-illustration slds-illustration_small">
+                    <div class="slds-text-longform">
+                        <h3 class="slds-text-heading_medium">미납 내역이 없습니다.</h3>
+                        <p class="slds-text-body_regular">현재 미납 상태인 납부 내역이 존재하지 않습니다.</p>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- 오류 메시지 -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">오류</span>
+                    <h2>{error.message}</h2>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

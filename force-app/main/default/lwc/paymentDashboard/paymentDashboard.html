@@ -1,0 +1,90 @@
+<template>
+    <lightning-card title="납부 상태 대시보드" icon-name="standard:payment_gateway">
+        <div class="slds-m-around_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+            
+            <!-- 액션 버튼 -->
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col">
+                    <lightning-button 
+                        label="수동 업데이트" 
+                        icon-name="utility:refresh" 
+                        onclick={handleUpdateAll}
+                        variant="brand"
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    
+                    <lightning-button 
+                        label="1시간 간격 업데이트 설정" 
+                        icon-name="utility:date_time" 
+                        onclick={handleStartScheduler}
+                        variant="neutral"
+                        disabled={isScheduled}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    
+                    <lightning-button 
+                        label="새로고침" 
+                        icon-name="utility:refresh" 
+                        onclick={handleRefresh}
+                        variant="neutral">
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- 상태 요약 통계 -->
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-3">
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                        <div class="slds-text-heading_large">{paidCount}</div>
+                        <div class="slds-text-title">납부완료</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                        <div class="slds-text-heading_large">{unpaidCount}</div>
+                        <div class="slds-text-title">미납</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small slds-theme_warning">
+                        <div class="slds-text-heading_large">{overdueCount}</div>
+                        <div class="slds-text-title">연체</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 스케줄링 정보 -->
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <div class="slds-col slds-size_4-of-12">
+                        <lightning-icon icon-name="utility:date_time" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        <span>스케줄링 상태:</span>
+                    </div>
+                    <div class="slds-col slds-size_8-of-12">
+                        <template if:true={isScheduled}>
+                            <lightning-badge label="활성화됨" class="slds-theme_success"></lightning-badge>
+                            <div class="slds-text-body_small slds-m-top_xx-small">
+                                다음 실행: {nextRunTime}
+                            </div>
+                        </template>
+                        <template if:false={isScheduled}>
+                            <lightning-badge label="비활성화됨" class="slds-theme_info"></lightning-badge>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 오류 메시지 -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">오류</span>
+                    <h2>{error.message}</h2>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

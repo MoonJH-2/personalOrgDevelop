@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OrgTranId__c</fullName>
+    <description>거래 식별자</description>
+    <externalId>false</externalId>
+    <inlineHelpText>거래 식별자</inlineHelpText>
+    <label>Org Transaction ID</label>
+    <length>50</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

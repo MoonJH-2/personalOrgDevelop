@@ -1,129 +1,81 @@
 /**
- * @description       : PaymentStatus 객체의 트리거 핸들러
- * @author            : Your Name
- * @last modified on  : 2024-01-10
- * @last modified by  : Your Name
-**/
+ * 납부 상태 트리거 핸들러 클래스
+ * @author GitHub Copilot
+ * @date 2025-07-12
+ */
 public class PaymentStatusTriggerHandler extends TriggerHandler {
     
-    // 핸들러 이름 반환
-    protected override String getHandlerName() {
-        return 'PaymentStatusTriggerHandler';
+    /**
+     * 생성자
+     */
+    public PaymentStatusTriggerHandler() {
+        // 필요한 초기화 작업 수행
     }
     
-    // Before Insert 처리
+    /**
+     * before insert 이벤트 처리
+     */
     protected override void beforeInsert(List<SObject> news) {
         List<PaymentStatus__c> newPaymentStatuses = (List<PaymentStatus__c>) news;
         
-        for (PaymentStatus__c ps : newPaymentStatuses) {
-            // Transaction ID가 없으면 생성
-            if (String.isBlank(ps.Transaction_ID__c)) {
-                ps.Transaction_ID__c = generateTransactionId(ps);
+        for(PaymentStatus__c ps : newPaymentStatuses) {
+            // 납부 기한이 설정되어 있고 오늘 날짜보다 이전인 경우 연체 상태로 설정
+            if(ps.DueDate__c != null && ps.DueDate__c < Date.today()) {
+                ps.IsOverdue__c = true;
+            }
+            
+            // 초기 상태 설정
+            if(ps.Status__c == null) {
+                ps.Status__c = '미납';
+            }
+            
+            // 최초 확인 일시 및 다음 확인 예정 일시 설정
+            if(ps.LastCheckedDate__c == null) {
+                ps.LastCheckedDate__c = Datetime.now();
+            }
+            
+            if(ps.NextCheckDate__c == null) {
+                ps.NextCheckDate__c = Datetime.now().addHours(1);
             }
         }
     }
     
-    // Before Update 처리
+    /**
+     * before update 이벤트 처리
+     */
     protected override void beforeUpdate(List<SObject> news, List<SObject> olds, Map<Id, SObject> newMap, Map<Id, SObject> oldMap) {
-        List<PaymentStatus__c> newPaymentStatuses = (List<PaymentStatus__c>) news;
-        Map<Id, PaymentStatus__c> oldPaymentStatusMap = (Map<Id, PaymentStatus__c>) oldMap;
+        List<PaymentStatus__c> updatedPaymentStatuses = (List<PaymentStatus__c>) news;
+        Map<Id, PaymentStatus__c> oldPsMap = (Map<Id, PaymentStatus__c>) oldMap;
         
-        for (PaymentStatus__c ps : newPaymentStatuses) {
-            PaymentStatus__c oldPs = oldPaymentStatusMap.get(ps.Id);
+        for(PaymentStatus__c ps : updatedPaymentStatuses) {
+            PaymentStatus__c oldPs = oldPsMap.get(ps.Id);
             
-            // 상태가 '완납'으로 변경되었을 때
-            if (ps.Status__c == '완납' && oldPs.Status__c != '완납') {
-                // 납부 완료 처리
-                ps.Payment_Date__c = ps.Payment_Date__c != null ? ps.Payment_Date__c : Datetime.now();
-                ps.Payment_Amount__c = ps.Payment_Amount__c != null ? ps.Payment_Amount__c : ps.Amount__c;
+            // 상태가 변경된 경우에만 처리
+            if(ps.Status__c != oldPs.Status__c) {
+                // 납부 완료인 경우 연체 상태 확인
+                if(ps.Status__c == '납부완료' && ps.PaymentDate__c != null && ps.DueDate__c != null) {
+                    ps.IsOverdue__c = ps.PaymentDate__c > ps.DueDate__c;
+                }
+                
+                // 상태에 따라 다음 확인 일시 조정
+                if(ps.Status__c == '납부완료') {
+                    // 납부 완료 상태는 더 이상 자주 확인할 필요 없음
+                    ps.NextCheckDate__c = Datetime.now().addDays(7);
+                } else if(ps.Status__c == '미납' && ps.IsOverdue__c) {
+                    // 연체 상태는 더 자주 확인
+                    ps.NextCheckDate__c = Datetime.now().addMinutes(30);
+                } else {
+                    // 기본 확인 주기
+                    ps.NextCheckDate__c = Datetime.now().addHours(1);
+                }
             }
         }
     }
     
-    // After Update 처리
+    /**
+     * after update 이벤트 처리
+     */
     protected override void afterUpdate(List<SObject> news, List<SObject> olds, Map<Id, SObject> newMap, Map<Id, SObject> oldMap) {
-        List<PaymentStatus__c> newPaymentStatuses = (List<PaymentStatus__c>) news;
-        Map<Id, PaymentStatus__c> oldPaymentStatusMap = (Map<Id, PaymentStatus__c>) oldMap;
-        
-        Set<Id> orderIds = new Set<Id>();
-        List<PaymentStatus__c> completedPayments = new List<PaymentStatus__c>();
-        
-        for (PaymentStatus__c ps : newPaymentStatuses) {
-            PaymentStatus__c oldPs = oldPaymentStatusMap.get(ps.Id);
-            
-            // 상태가 '완납'으로 변경되었을 때
-            if (ps.Status__c == '완납' && oldPs.Status__c != '완납') {
-                orderIds.add(ps.Order__c);
-                completedPayments.add(ps);
-            }
-        }
-        
-        // Order의 전체 납부 상태 확인 및 업데이트
-        if (!orderIds.isEmpty()) {
-            checkAndUpdateOrderStatus(orderIds);
-            
-            // 납부 완료 알림 전송 (필요시)
-            sendPaymentCompletionNotification(completedPayments);
-        }
-    }
-    
-    // Transaction ID 생성
-    private String generateTransactionId(PaymentStatus__c ps) {
-        GiroSettings__c settings = GiroSettings__c.getOrgDefaults();
-        String partnerCode = settings != null ? settings.Partner_Code__c : '000000000';
-        
-        return partnerCode + 'T' + 
-               Datetime.now().format('yyyyMMddHHmmss') + 
-               'C' + String.valueOf(Math.abs(Crypto.getRandomInteger())).substring(0, 5);
-    }
-    
-    // Order 상태 확인 및 업데이트
-    private void checkAndUpdateOrderStatus(Set<Id> orderIds) {
-        // 각 Order의 모든 PaymentStatus 확인
-        Map<Id, Order> ordersToUpdate = new Map<Id, Order>();
-        
-        for (AggregateResult ar : [
-            SELECT Order__c, 
-                   COUNT(Id) totalCount,
-                   SUM(CASE WHEN Status__c = '완납' THEN 1 ELSE 0 END) completedCount
-            FROM PaymentStatus__c
-            WHERE Order__c IN :orderIds
-            GROUP BY Order__c
-        ]) {
-            Id orderId = (Id) ar.get('Order__c');
-            Integer totalCount = (Integer) ar.get('totalCount');
-            Integer completedCount = (Integer) ar.get('completedCount');
-            
-            // 모든 PaymentStatus가 완납인 경우
-            if (totalCount == completedCount) {
-                Order ord = new Order();
-                ord.Id = orderId;
-                ord.Status = 'Completed';
-                ordersToUpdate.put(orderId, ord);
-            }
-        }
-        
-        if (!ordersToUpdate.isEmpty()) {
-            update ordersToUpdate.values();
-        }
-    }
-    
-    // 납부 완료 알림 전송
-    private void sendPaymentCompletionNotification(List<PaymentStatus__c> completedPayments) {
-        // 이메일 알림 또는 플랫폼 이벤트 발행
-        List<Payment_Completion_Event__e> events = new List<Payment_Completion_Event__e>();
-        
-        for (PaymentStatus__c ps : completedPayments) {
-            Payment_Completion_Event__e event = new Payment_Completion_Event__e();
-            event.PaymentStatus_Id__c = ps.Id;
-            event.Order_Id__c = ps.Order__c;
-            event.Payment_Amount__c = ps.Payment_Amount__c;
-            event.Payment_Date__c = ps.Payment_Date__c;
-            events.add(event);
-        }
-        
-        if (!events.isEmpty()) {
-            // EventBus.publish(events);
-        }
+        // 필요한 경우 구현
     }
 }

@@ -1,19 +1,7 @@
-/**
- * @description       : Order 객체의 트리거 핸들러 - PaymentStatus 자동 생성 관리
- * @author            : Your Name
- * @last modified on  : 2024-01-10
- * @last modified by  : Your Name
-**/
-public class OrderTriggerHandler extends TriggerHandler {
+public with sharing class OrderTriggerHandler extends TriggerHandler {
     
-    // 핸들러 이름 반환
-    protected override String getHandlerName() {
-        return 'OrderTriggerHandler';
-    }
-    
-    // After Insert 처리
-    protected override void afterInsert(List<SObject> news, Map<Id, SObject> newMap) {
-        List<Order> newOrders = (List<Order>) news;
+    protected override void afterInsert(List<SObject> newList, Map<Id, SObject> newMap) {
+        List<Order> newOrders = (List<Order>) newList;
         List<PaymentStatus__c> paymentStatusList = new List<PaymentStatus__c>();
         
         for (Order ord : newOrders) {
@@ -27,11 +15,9 @@ public class OrderTriggerHandler extends TriggerHandler {
         }
     }
     
-    // After Update 처리
-    protected override void afterUpdate(List<SObject> news, List<SObject> olds, Map<Id, SObject> newMap, Map<Id, SObject> oldMap) {
-        List<Order> newOrders = (List<Order>) news;
+    protected override void afterUpdate(List<SObject> newList, List<SObject> oldList, Map<Id, SObject> newMap, Map<Id, SObject> oldMap) {
+        List<Order> newOrders = (List<Order>) newList;
         Map<Id, Order> oldOrderMap = (Map<Id, Order>) oldMap;
-        
         List<PaymentStatus__c> paymentStatusList = new List<PaymentStatus__c>();
         Set<Id> orderIdsToDeletePayments = new Set<Id>();
         
@@ -63,8 +49,7 @@ public class OrderTriggerHandler extends TriggerHandler {
         }
     }
     
-    // PaymentStatus 생성 메서드
-    private List<PaymentStatus__c> createPaymentStatus(Order ord) {
+    private static List<PaymentStatus__c> createPaymentStatus(Order ord) {
         List<PaymentStatus__c> paymentStatusList = new List<PaymentStatus__c>();
         
         Integer installmentCount = getInstallmentCount(ord.Payment_Method__c);
@@ -96,8 +81,7 @@ public class OrderTriggerHandler extends TriggerHandler {
         return paymentStatusList;
     }
     
-    // 분할 횟수 계산
-    private Integer getInstallmentCount(String paymentMethod) {
+    private static Integer getInstallmentCount(String paymentMethod) {
         // 기본값 12개월로 가정, 실제로는 비즈니스 요구사항에 따라 조정
         if (paymentMethod == '월별') {
             return 12;

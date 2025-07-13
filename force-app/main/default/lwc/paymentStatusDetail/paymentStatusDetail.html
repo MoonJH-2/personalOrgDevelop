@@ -1,0 +1,151 @@
+<template>
+    <lightning-card title="납부 상태 상세 정보" icon-name="standard:payment_adjustment">
+        <div class="slds-p-horizontal_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative slds-m-vertical_medium">
+                    <lightning-spinner alternative-text="로딩 중" size="small"></lightning-spinner>
+                </div>
+            </template>
+            
+            <!-- 오류 표시 -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-assistive-text">오류</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="오류" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error.message}</h2>
+                </div>
+            </template>
+            
+            <!-- 납부 상태 정보 -->
+            <template if:true={paymentStatus}>
+                <div class="slds-grid slds-wrap slds-m-top_medium">
+                    <!-- 납부 상태 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="standard:payment" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">현재 납부 상태</p>
+                                <div class="slds-m-top_xx-small">
+                                    <lightning-badge label={paymentStatus.Status__c} variant={statusVariant}></lightning-badge>
+                                    <template if:true={isOverdue}>
+                                        <lightning-badge label="연체" variant="error" class="slds-m-left_xx-small"></lightning-badge>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 납부 금액 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:money" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">납부 금액</p>
+                                <p class="slds-text-heading_medium">
+                                    <lightning-formatted-number value={paymentStatus.Amount__c} format-style="currency" currency-code="KRW"></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 납부 완료 금액 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">납부 완료 금액</p>
+                                <p class="slds-text-heading_medium">
+                                    <lightning-formatted-number value={paymentStatus.PaidAmount__c} format-style="currency" currency-code="KRW"></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 미납 금액 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:warning" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">미납 금액</p>
+                                <p class="slds-text-heading_medium">
+                                    <lightning-formatted-number value={paymentStatus.UnpaidAmount__c} format-style="currency" currency-code="KRW"></lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 납부 일자 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:date_input" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">납부 일자</p>
+                                <p>{formattedPaymentDate}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 납부 기한 -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:date_time" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">납부 기한</p>
+                                <p>{formattedDueDate}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 마지막 확인 일자 -->
+                    <div class="slds-col slds-size_1-of-1 slds-p-right_medium slds-p-bottom_medium">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <lightning-icon icon-name="utility:sync" size="small"></lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-title slds-m-bottom_xx-small">마지막 상태 확인 일자</p>
+                                <p>{formattedLastCheckedDate}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 비고 -->
+                    <template if:true={paymentStatus.Notes__c}>
+                        <div class="slds-col slds-size_1-of-1 slds-p-right_medium slds-p-bottom_medium">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:note" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title slds-m-bottom_xx-small">비고</p>
+                                    <p>{paymentStatus.Notes__c}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            
+            <!-- 액션 버튼 -->
+            <div class="slds-m-top_medium slds-p-bottom_medium">
+                <lightning-button-group>
+                    <lightning-button label="새로고침" icon-name="utility:refresh" onclick={handleRefresh} disabled={isLoading}></lightning-button>
+                    <lightning-button label="납부 상태 업데이트" icon-name="utility:sync" variant="brand" onclick={handleUpdateStatus} disabled={isLoading}></lightning-button>
+                </lightning-button-group>
+            </div>
+        </div>
+    </lightning-card>
+</template>

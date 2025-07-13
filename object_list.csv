@@ -1,0 +1,224 @@
+QualifiedApiName,Label
+Contract,Contract
+Order,Order
+OrderItem,Order Product
+Asset,Asset
+Account,Account
+Contact,Contact
+Lead,Lead
+Product2,Product
+Campaign,Campaign
+CampaignMember,Campaign Member
+Case,Case
+ContentVersion,Content Version
+EmailMessage,Email Message
+Event,Event
+Individual,Individual
+Opportunity,Opportunity
+OpportunityContactRole,Opportunity Contact Role
+OpportunityLineItem,Opportunity Product
+PricebookEntry,Price Book Entry
+Solution,Solution
+Task,Task
+VoiceCall,Voice Call
+User,User
+WorkOrder,Work Order
+WorkOrderLineItem,Work Order Line Item
+ServiceAppointment,Service Appointment
+WorkType,Work Type
+ServiceResource,Service Resource
+ServiceTerritory,Service Territory
+ServiceTerritoryMember,Service Territory Member
+ServiceResourceSkill,Service Resource Skill
+SkillRequirement,Skill Requirement
+AssignedResource,Assigned Resource
+OperatingHours,Operating Hours
+ResourceAbsence,Resource Absence
+TimeSlot,Time Slot
+ResourcePreference,Resource Preference
+AccountBrand,Account Brand
+AccountCleanInfo,Account Clean Info
+Address,Address
+AssetRelationship,Asset Relationship
+AssociatedLocation,Associated Location
+ChannelProgram,Channel Program
+ChannelProgramLevel,Channel Program Level
+ChannelProgramMember,Channel Program Member
+ContactCleanInfo,Contact Clean Info
+ContractLineItem,Contract Line Item
+DandBCompany,D&B Company
+DelegatedAccount,External Managed Account
+DuplicateRecordItem,Duplicate Record Item
+DuplicateRecordSet,Duplicate Record Set
+Entitlement,Entitlement
+EntityMilestone,Object Milestone
+Idea,Idea
+QuickText,Quick Text
+UserServicePresence,User Presence
+AgentWork,Agent Work
+LeadCleanInfo,Lead Clean Info
+Shipment,Shipment
+ReturnOrder,Return Order
+ReturnOrderLineItem,Return Order Line Item
+Location,Location
+ContactPointEmail,Contact Point Email
+ContactPointPhone,Contact Point Phone
+ConsumptionSchedule,Consumption Schedule
+ConsumptionRate,Consumption Rate
+ProductConsumptionSchedule,Product Consumption Schedule
+ServiceTerritoryWorkType,Service Territory Work Type
+CardPaymentMethod,Card Payment Method
+ContactPointAddress,Contact Point Address
+ContactPointConsent,Contact Point Consent
+ContactPointTypeConsent,Contact Point Type Consent
+DataUseLegalBasis,Data Use Legal Basis
+DataUsePurpose,Data Use Purpose
+PaymentAuthorization,Payment Authorization
+PaymentGroup,Payment Group
+ProductCatalog,Catalog
+ProductCategory,Category
+ProductCategoryProduct,Product Category Product
+WebStore,Store
+AuthorizationForm,Authorization Form
+AuthorizationFormConsent,Authorization Form Consent
+AuthorizationFormDataUse,Authorization Form Data Use
+AuthorizationFormText,Authorization Form Text
+BuyerGroup,Buyer Group
+CartDeliveryGroup,Cart Delivery Group
+CartItem,Cart Item
+FulfillmentOrder,Fulfillment Order
+FulfillmentOrderLineItem,Fulfillment Order Product
+Payment,Payment
+PaymentGateway,Payment Gateway
+PaymentLineInvoice,Payment Line Invoice
+PaymentMethod,Payment Method
+Refund,Refund
+Shift,Shift
+WebCart,Cart
+WebStoreBuyerGroup,Store Buyer Group
+WebStoreCatalog,Store Catalog
+AssetStatePeriod,Asset State Period
+CartValidationOutput,Cart Validation Output
+CreditMemo,Credit Memo
+CreditMemoLine,Credit Memo Line
+FulfillmentOrderItemAdjustment,Fulfillment Order Item Adjustment
+FulfillmentOrderItemTax,Fulfillment Order Item Tax
+RefundLinePayment,Refund Line Payment
+AssetAction,Asset Action
+AssetActionSource,Asset Action Source
+CartTax,Cart Tax
+CommSubscription,Communication Subscription
+CommSubscriptionChannelType,Communication Subscription Channel Type
+CommSubscriptionConsent,Communication Subscription Consent
+CommSubscriptionTiming,Communication Subscription Timing
+CreditMemoInvApplication,Credit Memo Invoice Application
+DigitalWallet,Digital Wallet
+EngagementChannelType,Engagement Channel Type
+FinanceBalanceSnapshot,Finance Balance Snapshot
+FinanceTransaction,Finance Transaction
+LegalEntity,Legal Entity
+Macro,Macro
+PartnerFundAllocation,Partner Fund Allocation
+PartnerFundClaim,Partner Fund Claim
+PartnerFundRequest,Partner Fund Request
+PartnerMarketingBudget,Partner Marketing Budget
+Pricebook2,Price Book
+Recommendation,Recommendation
+SalesStore,Sales Store
+Scorecard,Scorecard
+ScorecardAssociation,Scorecard Association
+ScorecardMetric,Scorecard Metric
+ServiceContract,Service Contract
+UserProvisioningRequest,User Provisioning Request
+MessagingEndUser,Messaging User
+MessagingSession,Messaging Session
+RecordAction,RecordAction
+ContactRequest,Contact Request
+WorkTypeGroup,Work Type Group
+Image,Image
+WorkTypeGroupMember,Work Type Group Member
+Invoice,Invoice
+InvoiceLine,Invoice Line
+Promotion,Promotion
+PartyConsent,Party Consent
+ActivationTarget,Activation Target
+CartDeliveryGroupMethod,Cart Delivery Group Method
+WorkPlan,Work Plan
+WorkPlanTemplate,Work Plan Template
+WorkPlanTemplateEntry,Work Plan Template Entry
+WorkStep,Work Step
+WorkStepTemplate,Work Step Template
+LocationGroup,Location Group
+LocationGroupAssignment,Location Group Assignment
+OperatingHoursHoliday,Operating Hours Holiday
+ProcessException,Process Exception
+ProductAttribute,Product Attribute
+ProductAttributeSetProduct,Product Attribute Set Product
+ReturnOrderItemAdjustment,Return Order Item Adjustment
+ReturnOrderItemTax,Return Order Item Tax
+AlternativePaymentMethod,Alternative Payment Method
+Coupon,Coupon
+FlowOrchestrationInstance,Orchestration Run
+FlowOrchestrationStageInstance,Orchestration Stage Run
+FlowOrchestrationStepInstance,Orchestration Step Run
+FlowOrchestrationWorkItem,Orchestration Work Item
+PaymentAuthAdjustment,Payment Authorization Adjustment
+PromotionMarketSegment,Promotion Market Segment
+PromotionQualifier,Promotion Qualifier
+PromotionSegment,Promotion Segment
+PromotionSegmentBuyerGroup,Promotion Segment Buyer Group
+PromotionSegmentSalesStore,Promotion Segment Sales Store
+PromotionTarget,Promotion Target
+ShipmentItem,Shipment Item
+AppointmentTopicTimeSlot,Appointment Topic Time Slot
+CartItemPriceAdjustment,Cart Item Price Adjustment
+FlowOrchestrationLog,Orchestration Run Log
+WebCartAdjustmentGroup,Cart Adjustment Group
+BusinessBrand,Business Brand
+CaseRelatedIssue,Case Related Issue
+ChangeRequest,Change Request
+ChangeRequestRelatedIssue,Change Request Related Issue
+Customer,Customer
+Incident,Incident
+Problem,Problem
+ProblemIncident,Related Problem and Incident
+Seller,Seller
+ChangeRequestRelatedItem,Change Request Related Item
+IncidentRelatedItem,Incident Related Item
+ProblemRelatedItem,Problem Related Item
+WebCartAdjustmentBasis,Cart Adjustment Basis
+AppointmentInvitation,Appointment Invitation
+AppointmentInvitee,Appointment Invitee
+EngagementChannelWorkType,Engagement Channel Work Type
+ShiftEngagementChannel,Shift Engagement Channel
+ShiftWorkTopic,Shift Work Topic
+InventoryItemReservation,Inventory Item Reservation
+InventoryReservation,Inventory Reservation
+PromotionTier,Promotion Tier
+WebStoreInventorySource,Web Store Inventory Source
+AppointmentCategory,Appointment Category
+PromotionLineItemRule,Promotion Line Item Rule
+Waitlist,Waitlist
+WaitlistParticipant,Waitlist Participant
+WaitlistServiceResource,Waitlist Service Resource
+WaitlistWorkType,Waitlist Work Type
+PrivacyRTBFRequest,Privacy RTBF Request
+CartDeliveryGroupMethodAdj,Cart Delivery Group Method Adjustment
+DataQueryWorkspace,Query Editor
+ServiceAppointmentAttendee,Service Appointment Attendee
+ApprovalSubmission,Approval Submission
+ApprovalWorkItem,Approval Work Item
+DataKitDeploymentLog,Data Kit Deployment Log
+DeliveryEstimationSetup,Delivery Estimation Setup
+LocationShippingCarrierMethod,Location Shipping Carrier Method
+ShippingCarrier,Shipping Carrier
+ShippingCarrierMethod,Shipping Carrier Method
+ApprovalSubmissionDetail,Approval Submission Detail
+DataMaskCustomValueLibrary,Custom Library
+WebCartCredit,Web Cart Credit
+Fitness__c,Fitness
+PaymentStatus__c,PaymentStatus
+Giro_Settings__c,Giro Settings
+GiroSettings__c,Giro Settings
+Trigger_Exception_Log__c,Trigger Exception Log
+Trigger_Handler_Manager__mdt,Trigger Handler Manager

@@ -1,5 +1,3 @@
 trigger OrderTrigger on Order (after insert, after update) {
-    TriggerManager.prepare()
-        .bind(new OrderTriggerHandler())
-        .execute();
+    new OrderTriggerHandler().execute(Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap);
 }

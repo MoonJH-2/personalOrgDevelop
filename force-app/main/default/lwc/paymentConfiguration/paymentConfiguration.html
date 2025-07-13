@@ -1,0 +1,149 @@
+<template>
+    <lightning-card title="납부 상태 업데이트 설정" icon-name="standard:calibration">
+        <div slot="actions">
+            <lightning-button-icon icon-name="utility:refresh" 
+                               variant="border-filled" 
+                               alternative-text="새로고침" 
+                               title="새로고침" 
+                               onclick={handleRefresh}
+                               disabled={isLoading}>
+            </lightning-button-icon>
+        </div>
+        
+        <div class="slds-p-horizontal_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={showSpinner}>
+                <div class="slds-is-relative slds-m-vertical_medium">
+                    <lightning-spinner alternative-text="로딩 중" size="small"></lightning-spinner>
+                </div>
+            </template>
+            
+            <!-- 오류 표시 -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-assistive-text">오류</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="오류" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>{error.message}</h2>
+                </div>
+            </template>
+            
+            <!-- 스케줄러 정보 -->
+            <div class="slds-box slds-theme_default">
+                <div class="slds-grid slds-grid_align-spread slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium">스케줄러 상태</h2>
+                    <template if:true={isLoading}>
+                        <div class="slds-is-relative" style="width: 24px; height: 24px;">
+                            <lightning-spinner alternative-text="로딩 중" size="small"></lightning-spinner>
+                        </div>
+                    </template>
+                </div>
+                
+                <template if:true={scheduledJobs.length}>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:date_time" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title slds-m-bottom_xx-small">다음 실행 시간</p>
+                                    <p>{formattedNextFireTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:date_time" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title slds-m-bottom_xx-small">마지막 실행 시간</p>
+                                    <p>{formattedPreviousFireTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:layers" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title slds-m-bottom_xx-small">현재 상태</p>
+                                    <p>
+                                        <lightning-badge label={jobStatus} variant="info">
+                                        </lightning-badge>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="utility:record" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title slds-m-bottom_xx-small">실행 횟수</p>
+                                    <p>{executionCount}회</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template if:false={scheduledJobs.length}>
+                    <div class="slds-illustration slds-illustration_small">
+                        <div class="slds-text-longform slds-text-align_center">
+                            <h3 class="slds-text-heading_medium">활성화된 스케줄러가 없습니다</h3>
+                            <p class="slds-text-body_regular">스케줄러를 시작하여 정기적인 납부 상태 업데이트를 설정하세요.</p>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- 액션 버튼 -->
+                <div class="slds-m-top_medium">
+                    <lightning-button-group>
+                        <lightning-button label="지금 업데이트" 
+                                       icon-name="utility:update" 
+                                       onclick={handleUpdateNow} 
+                                       disabled={showSpinner}></lightning-button>
+                        <lightning-button label="스케줄러 시작" 
+                                       icon-name="utility:date_time" 
+                                       variant="brand" 
+                                       onclick={handleStartScheduler} 
+                                       disabled={showSpinner}></lightning-button>
+                    </lightning-button-group>
+                </div>
+            </div>
+            
+            <!-- 스케줄 작업 정보 -->
+            <template if:true={scheduledJobs.length}>
+                <div class="slds-m-top_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">스케줄 작업 정보</div>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col" class="slds-cell-wrap">
+                                    <div class="slds-truncate" title="작업 이름">작업 이름</div>
+                                </th>
+                                <th scope="col" class="slds-cell-wrap">
+                                    <div class="slds-truncate" title="크론 표현식">크론 표현식</div>
+                                </th>
+                                <th scope="col" class="slds-cell-wrap">
+                                    <div class="slds-truncate" title="상태">상태</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={scheduledJobs} for:item="job">
+                                <tr key={job.id}>
+                                    <td class="slds-cell-wrap">{job.name}</td>
+                                    <td class="slds-cell-wrap">{job.expression}</td>
+                                    <td class="slds-cell-wrap">{job.state}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

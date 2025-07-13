@@ -33,7 +33,7 @@
         <name>StaticResource</name>
     </types>
     <types>
-        <members>*</members>
+        <members>*</members> 
         <name>CustomObject</name>
     </types>
     <version>64.0</version>
